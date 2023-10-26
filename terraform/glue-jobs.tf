@@ -18,12 +18,12 @@ resource "aws_s3_object" "glue_job_scripts" {
 
 
 resource "aws_glue_job" "test_job" {
-  name = "test-job-${var.environment}"
+  name     = "test-job-${var.environment}"
   role_arn = aws_iam_role.glue.arn
 
   glue_version = "4.0"
   command {
-    name = "glueetl"
+    name            = "glueetl"
     script_location = "${local.scripts_path}/test_job.py"
   }
 }
