@@ -21,14 +21,17 @@ Before running, ensure that you have valid AWS credentials in your terminal and 
 
 1. Initialize
 Only run this when you first setup:
+
 `./terraform/scripts/init.sh`
 
 2. Plan
 Re-run anytime your configuration changes (including scripts):
+
 `./terraform/scripts/plan.sh`
 
 3. Apply
 If the changes outlined in your plan look good, apply them:
+
 `./terraform/scripts/apply.sh`
 
 If the apply succeeded, your jobs should be ready to run.
