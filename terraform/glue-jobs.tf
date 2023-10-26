@@ -25,4 +25,12 @@ resource "aws_glue_job" "test_job" {
     name            = "glueetl"
     script_location = "${local.scripts_path}/test_job.py"
   }
+  default_arguments = {
+    "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-job-insights"              = "true"
+    "--enable-spark-ui"                  = "true"
+    "--job-language"                     = "python"
+    "--spark-event-logs-path"            = "s3://${aws_s3_bucket.data_lake.id}/spark-ui-logs/"
+  }
+  execution_class = "STANDARD"
 }
