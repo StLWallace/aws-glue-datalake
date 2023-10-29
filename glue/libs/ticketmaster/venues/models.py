@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from libs.models.common import City, State, Country, Address, Location, Market, _Links
 
 
@@ -14,7 +14,15 @@ class Venue(BaseModel):
     city: City
     state: State
     country: Country
-    address: Address
-    location: Location
-    markets: List[Market]
+    address: Optional[Address] = None
+    location: Optional[Location] = None
+    markets: Optional[List[Market]] = None
     _links: _Links
+
+
+class NextPage(BaseModel):
+    """Attributes for next page in paginated response"""
+
+    url: str
+    page: int
+    size: int

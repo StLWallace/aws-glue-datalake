@@ -7,13 +7,14 @@ ROOT_DIR = os.path.dirname(
 )
 sys.path.append(ROOT_DIR)
 
-from libs.aws_utils.secrets import get_secret_value
+from libs.aws_utils.glue import get_job_start_time
 
 
-SECRET_ID = "ticketmaster-api-key-demo"
+JOB_NAME = "meal-me-demo"
+JOB_RUN_ID = "jr_94dc968403c10760c15ae5b11274c29f306d2d8f113bb36bb765bfcf9d28454e"
 
 if __name__ == "__main__":
-    """Validate secret output format"""
-    secret = get_secret_value(SECRET_ID)
-    assert "consumer_secret" in secret
-    print(secret)
+
+    start_time = get_job_start_time(JOB_NAME, JOB_RUN_ID)
+
+    print(start_time)
