@@ -45,3 +45,25 @@ resource "aws_iam_role_policy_attachment" "glue_s3" {
   role       = aws_iam_role.glue.name
   policy_arn = aws_iam_policy.glue_s3.arn
 }
+
+# Secret access
+data "aws_iam_policy_document" "glue_secrets" {
+  statement {
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecrets"
+    ]
+    resources = [aws_secretsmanager_secret.ticketmaster_api_key.arn]
+  }
+}
+
+resource "aws_iam_policy" "glue_secrets" {
+  name   = "glue-secrets-${var.environment}"
+  policy = data.aws_iam_policy_document.glue_secrets.json
+}
+
+resource "aws_iam_role_policy_attachment" "glue_secrets" {
+  role       = aws_iam_role.glue.name
+  policy_arn = aws_iam_policy.glue_secrets.arn
+}
