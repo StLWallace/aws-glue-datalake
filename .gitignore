@@ -167,3 +167,4 @@ backend-demo.tfvars
 
 # Data
 data
+terraform/libs.zip
