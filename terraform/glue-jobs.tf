@@ -112,7 +112,7 @@ resource "aws_glue_job" "venues_processed" {
     "--enable-job-insights"              = "true"
     "--enable-spark-ui"                  = "true"
     "--job-language"                     = "python"
-    "--spark-event-logs-path"            = "s3://${aws_s3_bucket.data_lake.id}/spark-ui-logs/venues-raw/"
+    "--spark-event-logs-path"            = "s3://${aws_s3_bucket.data_lake.id}/spark-ui-logs/venues-processed/"
     "--raw_data_path"                    = "s3://${aws_s3_bucket.data_lake.id}/raw/ticketmaster/venues"
     "--output_data_path"                 = "s3://${aws_s3_bucket.data_lake.id}/processed/ticketmaster/venues"
     "--additional-python-modules"        = "smart_open,pydantic"
@@ -149,6 +149,40 @@ resource "aws_glue_job" "events_raw" {
     "--spark-event-logs-path"            = "s3://${aws_s3_bucket.data_lake.id}/spark-ui-logs/events-raw/"
     "--output_data_path"                 = "s3://${aws_s3_bucket.data_lake.id}/raw/ticketmaster/events"
     "--secret_name"                      = aws_secretsmanager_secret.ticketmaster_api_key.id
+    "--additional-python-modules"        = "smart_open,pydantic"
+    "--extra-py-files"                   = "s3://${aws_s3_bucket.glue_scripts.id}/libs.zip"
+  }
+  execution_class = "STANDARD"
+}
+
+
+/* Events processed data job
+default_arguments:
+  output_data_path - location where the downloaded data will be written (in S3)
+  secret_name - name of AWS SecretsManager secret that contains the Ticketmaster API creds
+*/
+resource "aws_glue_job" "events_processed" {
+  name              = "events-processed-${var.environment}"
+  role_arn          = aws_iam_role.glue.arn
+  number_of_workers = 2
+  worker_type       = "G.1X"
+  execution_property {
+    max_concurrent_runs = 2
+  }
+
+  glue_version = "4.0"
+  command {
+    name            = "glueetl"
+    script_location = "${local.scripts_path}/events_processed.py"
+  }
+  default_arguments = {
+    "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-job-insights"              = "true"
+    "--enable-spark-ui"                  = "true"
+    "--job-language"                     = "python"
+    "--spark-event-logs-path"            = "s3://${aws_s3_bucket.data_lake.id}/spark-ui-logs/events-processed/"
+    "--raw_data_path"                    = "s3://${aws_s3_bucket.data_lake.id}/raw/ticketmaster/events"
+    "--output_data_path"                 = "s3://${aws_s3_bucket.data_lake.id}/processed/ticketmaster/events"
     "--additional-python-modules"        = "smart_open,pydantic"
     "--extra-py-files"                   = "s3://${aws_s3_bucket.glue_scripts.id}/libs.zip"
   }
