@@ -34,3 +34,11 @@ class Self(BaseModel):
 
 class _Links(BaseModel):
     self: Self
+
+
+class NextPage(BaseModel):
+    """Attributes for next page in paginated response"""
+
+    url: str
+    page: int
+    size: int
