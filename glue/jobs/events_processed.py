@@ -38,6 +38,12 @@ def extract_sales(attr: Literal["start_date_time", "end_date_time"]) -> Column:
     return col_exp
 
 
+def extract_image_urls() -> Column:
+    """Transforms the images list of structs into a list of url values"""
+    col_exp = F.expr("transform(images, i -> i.url)").alias("image_urls")
+    return col_exp
+
+
 def process(conf: ProcessConf, spark: SparkSession) -> None:
     """Reads data json, cleans, and writes to parquet"""
     events_raw = spark.read.json(path=conf.raw_data_path)
@@ -45,10 +51,10 @@ def process(conf: ProcessConf, spark: SparkSession) -> None:
     events_processed = events_raw.select(
         "classifications",
         extract_start_date(),
-        "images",
+        extract_image_urls(),
         "locale",
         "name",
-        "promoter",
+        F.col("promoter.id").alias("promoter_id"),
         extract_sales("start_date_time"),
         extract_sales("end_date_time"),
         "test",
