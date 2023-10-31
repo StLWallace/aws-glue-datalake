@@ -25,7 +25,9 @@ def process(conf: ProcessConf, spark: SparkSession) -> None:
     df = spark.read.json(path=conf.raw_data_path)
     job_start_time = get_job_start_time(conf.job_name, conf.job_run_id)
 
-    df.write.partitionBy("process_date").parquet(conf.output_data_path)
+    df.write.partitionBy("process_date").mode("overwrite").parquet(
+        conf.output_data_path
+    )
 
 
 if __name__ == "__main__":

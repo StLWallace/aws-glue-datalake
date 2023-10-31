@@ -28,7 +28,7 @@ resource "aws_s3_object" "glue_libs" {
   bucket = aws_s3_bucket.glue_scripts.id
   key    = "libs.zip"
   source = data.archive_file.glue_libs.output_path
-  etag   = filemd5("libs.zip")
+  etag   = filemd5(data.archive_file.glue_libs.output_path)
 }
 
 
