@@ -22,6 +22,20 @@ class ProcessConf(BaseModel):
     job_run_id: str
 
 
+def get_process_conf() -> ProcessConf:
+    """Parses args and returns a process conf"""
+    args = getResolvedOptions(
+        sys.argv, ["JOB_NAME", "output_data_path", "raw_data_path"]
+    )
+    conf = ProcessConf(
+        output_data_path=args["output_data_path"],
+        raw_data_path=args["raw_data_path"],
+        job_name=args["JOB_NAME"],
+        job_run_id=args["JOB_RUN_ID"],
+    )
+    return conf
+
+
 def extract_start_date() -> Column:
     """Extracts start date from a Date struct field"""
     col_exp = F.col("dates.start.local_date").alias("start_date")
@@ -45,9 +59,13 @@ def extract_image_urls() -> Column:
 
 
 def process(conf: ProcessConf, spark: SparkSession) -> None:
-    """Reads data json, cleans, and writes to parquet"""
+    """Reads data json, cleans, and writes to parquet
+    The raw events data contains many nested structs which this flattens
+    Args:
+        conf - a ProcessConf object
+        spark - a SparkSession
+    """
     events_raw = spark.read.json(path=conf.raw_data_path)
-    job_start_time = get_job_start_time(conf.job_name, conf.job_run_id)
     events_processed = events_raw.select(
         "classifications",
         extract_start_date(),
@@ -75,17 +93,9 @@ if __name__ == "__main__":
     glue_context = GlueContext(sc)
     job = Job(glue_context)
 
-    args = getResolvedOptions(
-        sys.argv, ["JOB_NAME", "output_data_path", "raw_data_path"]
-    )
-    conf = ProcessConf(
-        output_data_path=args["output_data_path"],
-        raw_data_path=args["raw_data_path"],
-        job_name=args["JOB_NAME"],
-        job_run_id=args["JOB_RUN_ID"],
-    )
+    conf = get_process_conf()
 
-    job.init(job_name=args["JOB_NAME"])
+    job.init(job_name=conf.job_name)
 
     process(conf, spark)
 
