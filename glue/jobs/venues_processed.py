@@ -1,5 +1,6 @@
 """Reads in raw venue data, cleans it, and writes it to s3 as parquet"""
 
+import logging
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.column import Column
@@ -10,6 +11,10 @@ import sys
 from pydantic import BaseModel
 
 from libs.aws_utils.glue import get_job_start_time
+from libs.utils import get_logger
+
+
+logger = get_logger()
 
 
 class ProcessConf(BaseModel):
@@ -59,6 +64,7 @@ def process(conf: ProcessConf, spark: SparkSession) -> None:
     df_processed.write.partitionBy("process_date").mode("overwrite").parquet(
         conf.output_data_path
     )
+    logger.info(f"Processed venues data written to {conf.output_data_path}")
 
 
 if __name__ == "__main__":

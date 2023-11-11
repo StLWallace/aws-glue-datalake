@@ -9,7 +9,10 @@ from pydantic import BaseModel
 from libs.aws_utils.secrets import get_secret_value
 from libs.aws_utils.glue import get_job_start_time
 from libs.ticketmaster.events.client import EventRequests
-from libs.utils import write_list_model_newline_json
+from libs.utils import write_list_model_newline_json, get_logger
+
+
+logger = get_logger()
 
 
 class ProcessConf(BaseModel):
@@ -28,11 +31,13 @@ def process(conf: ProcessConf) -> None:
     event_client = EventRequests(api_key=creds["consumer_key"])
 
     events, _ = event_client.get_all_events()
+    logger.info(f"Loaded {len(events)} event records from Ticketmaster")
     job_run_date = get_job_start_time(
         job_name=conf.job_name, job_run_id=conf.job_run_id
     )
     full_output_path = f"{conf.output_data_path}/process_date={job_run_date}/data.json"
     write_list_model_newline_json(file_path=full_output_path, model_list=events)
+    logger.info(f"Events data written to {full_output_path}")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,10 @@ from pydantic import BaseModel
 from typing import Literal
 
 from libs.aws_utils.glue import get_job_start_time
+from libs.utils import get_logger
+
+
+logger = get_logger()
 
 
 class ProcessConf(BaseModel):
@@ -83,6 +87,7 @@ def process(conf: ProcessConf, spark: SparkSession) -> None:
     events_processed.write.partitionBy("process_date").mode("overwrite").parquet(
         conf.output_data_path
     )
+    logger.info(f"Processed events data written to {conf.output_data_path}")
 
 
 if __name__ == "__main__":
