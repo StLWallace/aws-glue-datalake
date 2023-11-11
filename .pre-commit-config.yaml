@@ -15,3 +15,7 @@ repos:
         name: terraform-fmt
         entry: ./terraform/scripts/format.sh
         language: script
+    -   id: terraform-dox
+        name: terraform-dox
+        entry: ./terraform/scripts/format.sh
+        language: script

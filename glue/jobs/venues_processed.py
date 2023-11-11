@@ -54,7 +54,7 @@ def process(conf: ProcessConf, spark: SparkSession) -> None:
         "location",
         extract_markets(),
         "test",
-        "_links",
+        "process_date",
     )
     df_processed.write.partitionBy("process_date").mode("overwrite").parquet(
         conf.output_data_path

@@ -62,7 +62,7 @@ class Classification(BaseModel):
     primary: bool
     segment: Segment
     genre: Genre
-    sub_genre: SubGenre = Field(..., alias="subGenre")
+    sub_genre: Optional[SubGenre] = Field(None, alias="subGenre")
 
 
 class Promoter(BaseModel):
