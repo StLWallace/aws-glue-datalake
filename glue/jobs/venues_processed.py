@@ -1,7 +1,8 @@
 """Reads in raw venue data, cleans it, and writes it to s3 as parquet"""
 
 from pyspark.context import SparkContext
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, functions as F
+from pyspark.sql.column import Column
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
@@ -20,12 +21,42 @@ class ProcessConf(BaseModel):
     job_run_id: str
 
 
+def format_address() -> Column:
+    """Reshapes the address field and other attributes into a more logical struct"""
+    line1 = F.col("address.line1").alias("street")
+    city = F.col("city.name").alias("city")
+    state = F.col("state")
+    country = F.col("country")
+    postal_code = F.col("postal_code")
+
+    col_exp = F.struct(line1, city, state, postal_code, country).alias("address")
+
+    return col_exp
+
+
+def extract_markets() -> Column:
+    """Market only has 'id' key, so this flattens the list"""
+    col_exp = F.expr("transform(markets, m -> m.id)").alias("markets")
+    return col_exp
+
+
 def process(conf: ProcessConf, spark: SparkSession) -> None:
     """Reads data json, cleans, and writes to parquet"""
     df = spark.read.json(path=conf.raw_data_path)
     job_start_time = get_job_start_time(conf.job_name, conf.job_run_id)
-
-    df.write.partitionBy("process_date").mode("overwrite").parquet(
+    df_processed = df.select(
+        "name",
+        "type",
+        "id",
+        "locale",
+        format_address(),
+        "timezone",
+        "location",
+        extract_markets(),
+        "test",
+        "_links",
+    )
+    df_processed.write.partitionBy("process_date").mode("overwrite").parquet(
         conf.output_data_path
     )
 
