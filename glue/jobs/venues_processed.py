@@ -1,6 +1,5 @@
 """Reads in raw venue data, cleans it, and writes it to s3 as parquet"""
 
-import logging
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.column import Column
