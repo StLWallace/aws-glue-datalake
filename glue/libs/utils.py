@@ -15,6 +15,6 @@ def write_list_model_newline_json(file_path: str, model_list=List[BaseModel]) ->
 def get_logger() -> logging.Logger:
     """Gets a logger and sets level to INFO"""
     logger = logging.getLogger()
-    logger.level(logging.INFO)
+    logger.setLevel(logging.INFO)
 
     return logger

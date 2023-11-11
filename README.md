@@ -55,10 +55,10 @@ If the changes outlined in your plan look good, apply them:
 After creating your Ticketmaster API key and running `terraform apply`, set the value of `ticketmaster-api-key-{env}` as:
 ```
 {
-  "consumer_key": "consumer key value",
-  "consumer_secret": "consumer secret value"
+  "consumer_key": "your consumer key value",
+  "consumer_secret": "your consumer secret value"
 }
-replacing the values with your real ones.
 ```
+replacing the values with your real ones.
 
 If the apply succeeded and you loaded the secret, your jobs should be ready to run.
