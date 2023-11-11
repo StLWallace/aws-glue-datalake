@@ -1,5 +1,4 @@
 from pyspark.context import SparkContext
-from pyspark.sql import SparkSession
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
@@ -43,7 +42,6 @@ def process(conf: ProcessConf) -> None:
 if __name__ == "__main__":
     # Intialize session and context objects
     sc = SparkContext.getOrCreate()
-    spark = SparkSession(sc)
 
     glue_context = GlueContext(sc)
     job = Job(glue_context)
