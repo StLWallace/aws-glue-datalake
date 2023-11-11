@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List
 import smart_open
 import logging
+import sys
 
 
 def write_list_model_newline_json(file_path: str, model_list=List[BaseModel]) -> None:
@@ -17,4 +18,7 @@ def get_logger() -> logging.Logger:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
     return logger
