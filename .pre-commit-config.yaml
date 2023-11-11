@@ -17,5 +17,5 @@ repos:
         language: script
     -   id: terraform-dox
         name: terraform-dox
-        entry: ./terraform/scripts/format.sh
+        entry: ./terraform/scripts/docs.sh
         language: script
